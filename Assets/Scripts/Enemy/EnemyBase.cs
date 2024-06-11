@@ -10,9 +10,17 @@ public class EnemyBase : MonoBehaviour
     {
         Debug.Log(collision.transform.name);
         var health = collision.gameObject.GetComponent<HealthBase>();
-        if(health != null)
+        if (health != null)
         {
             health.Damage(damage);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Projectile"))
+        {
+            Destroy(gameObject); // Destroi o inimigo
         }
     }
 }
