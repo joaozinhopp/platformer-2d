@@ -22,10 +22,28 @@ public class Player : MonoBehaviour
     public SOFloat soJumpScaleX;
     public SOFloat soAnimationDuration;
     private bool isJumping = false;
+    public Collider2D collider2D;
+    public float distToGround;
+    public float spaceToGround = .1f;
+    public ParticleSystem jumpVFX;
 
+    private void Awake()
+    {
+        if (collider2D != null)
+        {
+            distToGround = collider2D.bounds.extents.y;
+        }
+    }
+
+    private bool isGrounded()
+    {
+        Debug.DrawRay(transform.position, -Vector2.up, Color.magenta, distToGround + spaceToGround);
+        return Physics2D.Raycast(transform.position, -Vector2.up, distToGround + spaceToGround);
+    }
 
     private void Update()
     {
+        isGrounded();
         HandleJump();
         HandleMovement();
     }
@@ -72,12 +90,18 @@ public class Player : MonoBehaviour
 
     private void HandleJump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && !isJumping)
+        if (Input.GetKeyDown(KeyCode.Space) && !isJumping && isGrounded())
         {
             myRigidbody.velocity = Vector2.up * forceJump;
             isJumping = true;
             HandleScaleJump();
+            PlayJumpVFX();
         }
+    }
+
+    private void PlayJumpVFX()
+    {
+        if (jumpVFX != null) jumpVFX.Play();
     }
 
     private void HandleScaleJump()
