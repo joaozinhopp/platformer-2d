@@ -5,6 +5,8 @@ using DG.Tweening;
 
 public class Player : MonoBehaviour
 {
+    public SOPlayerSetup soPlayerSetup;
+
     public Rigidbody2D myRigidbody;
     public Vector2 friction = new Vector2(.1f, 0);
     public float speed;
@@ -16,8 +18,11 @@ public class Player : MonoBehaviour
     public float animationDuration = .3f;
     public string boolRun = "Run";
     public Animator animator;
-
+    public SOFloat soJumpScaleY;
+    public SOFloat soJumpScaleX;
+    public SOFloat soAnimationDuration;
     private bool isJumping = false;
+
 
     private void Update()
     {
@@ -77,10 +82,10 @@ public class Player : MonoBehaviour
 
     private void HandleScaleJump()
     {
-        myRigidbody.transform.DOScaleY(jumpScaleY, animationDuration).SetLoops(2, LoopType.Yoyo).OnComplete(() =>
+        myRigidbody.transform.DOScaleY(soJumpScaleY.value, soAnimationDuration.value).SetLoops(2, LoopType.Yoyo).OnComplete(() =>
         {
             isJumping = false;
         });
-        myRigidbody.transform.DOScaleX(jumpScaleX, animationDuration).SetLoops(2, LoopType.Yoyo);
+        myRigidbody.transform.DOScaleX(soJumpScaleY.value, soAnimationDuration.value).SetLoops(2, LoopType.Yoyo);
     }
 }

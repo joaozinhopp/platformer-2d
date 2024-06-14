@@ -5,7 +5,7 @@ using TMPro;
 
 public class ItemManager : MonoBehaviour
 {
-    public int coins;
+    public SOInt coins;
     public static ItemManager Instance;
     public TextMeshProUGUI uiTextCoins;
 
@@ -24,17 +24,17 @@ public class ItemManager : MonoBehaviour
 
     private void Reset()
     {
-        coins = 0;
+        coins.Value = 0;
     }
 
     public void AddCoins(int amount = 1)
     {
-        coins += amount;
+        coins.Value += amount;
         UpdateUI();
     }
 
     private void UpdateUI()
     {
-        uiTextCoins.text = coins.ToString();
+        uiTextCoins.text = coins.Value.ToString();
     }
 }
