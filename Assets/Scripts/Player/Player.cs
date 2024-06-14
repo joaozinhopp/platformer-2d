@@ -27,11 +27,36 @@ public class Player : MonoBehaviour
     public float spaceToGround = .1f;
     public ParticleSystem jumpVFX;
 
+    // Add these fields for the movement sound
+    public AudioSource movementAudioSource;
+    public AudioClip movementClip;
+
+    // Add these fields for the jump sound
+    public AudioSource jumpAudioSource;
+    public AudioClip jumpClip;
+
     private void Awake()
     {
         if (collider2D != null)
         {
             distToGround = collider2D.bounds.extents.y;
+        }
+
+        // Set up the AudioSource component for movement sound
+        if (movementAudioSource == null)
+        {
+            movementAudioSource = gameObject.AddComponent<AudioSource>();
+            movementAudioSource.clip = movementClip;
+            movementAudioSource.loop = true; // Loop the movement sound
+            movementAudioSource.playOnAwake = false; // Do not play on awake
+        }
+
+        // Set up the AudioSource component for jump sound
+        if (jumpAudioSource == null)
+        {
+            jumpAudioSource = gameObject.AddComponent<AudioSource>();
+            jumpAudioSource.clip = jumpClip;
+            jumpAudioSource.playOnAwake = false; // Do not play on awake
         }
     }
 
@@ -55,27 +80,46 @@ public class Player : MonoBehaviour
         else
             _currentSpeed = speed;
 
+        bool isMoving = false;
+
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             myRigidbody.velocity = new Vector2(-_currentSpeed, myRigidbody.velocity.y);
-            if(myRigidbody.transform.localScale.x != -1)
-                {
+            if (myRigidbody.transform.localScale.x != -1)
+            {
                 myRigidbody.transform.DOScaleX(-1, .1f);
             }
             animator.SetBool(boolRun, true);
+            isMoving = true;
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
             myRigidbody.velocity = new Vector2(_currentSpeed, myRigidbody.velocity.y);
             if (myRigidbody.transform.localScale.x != 1)
-                {
+            {
                 myRigidbody.transform.DOScaleX(1, .1f);
             }
             animator.SetBool(boolRun, true);
+            isMoving = true;
         }
         else
         {
             animator.SetBool(boolRun, false);
+        }
+
+        if (isMoving)
+        {
+            if (!movementAudioSource.isPlaying)
+            {
+                movementAudioSource.Play();
+            }
+        }
+        else
+        {
+            if (movementAudioSource.isPlaying)
+            {
+                movementAudioSource.Stop();
+            }
         }
 
         if (myRigidbody.velocity.x > 0)
@@ -96,12 +140,21 @@ public class Player : MonoBehaviour
             isJumping = true;
             HandleScaleJump();
             PlayJumpVFX();
+            PlayJumpSound(); // Play the jump sound
         }
     }
 
     private void PlayJumpVFX()
     {
         if (jumpVFX != null) jumpVFX.Play();
+    }
+
+    private void PlayJumpSound()
+    {
+        if (jumpAudioSource != null && jumpClip != null)
+        {
+            jumpAudioSource.PlayOneShot(jumpClip);
+        }
     }
 
     private void HandleScaleJump()
